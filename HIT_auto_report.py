@@ -9,17 +9,17 @@ from selenium.webdriver.common.keys import Keys
 
 class Report(object):
     def __init__(self):
-        self.base_url = 'http://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/yqxx'
+        self.base_url = ''
         self.driver = webdriver.Chrome()
         self.login()
         self.Report()
 
     def login(self):
-        self.load_url('http://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/shsj/loginChange')
+        self.load_url('')
         time.sleep(0.5)
-        if 'http://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsHome' == self.driver.current_url:
+        if '' == self.driver.current_url:
             return
-        self.driver.execute_script("tongyishenfen()")
+        self.driver.execute_script("")
         time.sleep(0.5)
         self.driver.find_element_by_id('username').send_keys(id)
         self.driver.find_element_by_id('password').send_keys(Password)
@@ -28,16 +28,16 @@ class Report(object):
 
         while True:
             time.sleep(1)
-            if 'http://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsHome' == self.driver.current_url:
+            if '' == self.driver.current_url:
                 break
 
-        if 'http://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsHome' == self.driver.current_url:
-            self.load_url('http://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/yqxx')
+        if '' == self.driver.current_url:
+            self.load_url('')
             return
 
     def Report(self):
-        while 'http://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/yqxx' != self.driver.current_url:
-            self.load_url('http://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/yqxx')
+        while '' != self.driver.current_url:
+            self.load_url('')
             time.sleep(5)
         self.driver.execute_script("add()")
         if self.driver.find_element_by_id('txfscheckbox'):
