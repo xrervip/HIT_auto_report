@@ -3,6 +3,10 @@
 #@Time  : 2020/2/18 18:42
 #@Author: f
 #@File  : main.py
+#为了对学校网络和api进行保护 有关网站链接和js方法已被删除
+#警告：在使用本工具之前请确保您没有感染新冠肺炎或者存在感染的风险或处于医学隔离观察中，
+#本工具开发的目的是为了配合导员工作（作者经常因为没有及时上报被辅导员提醒），对于不遵守使用条例的行为而导致的后果作者不承担责任
+#最后祝伟大祖国早日战胜疫情，武汉加油，中国加油！
 from selenium import webdriver
 import time
 from selenium.webdriver.common.keys import Keys
@@ -39,10 +43,10 @@ class Report(object):
         while '' != self.driver.current_url:
             self.load_url('')
             time.sleep(5)
-        self.driver.execute_script("add()")
-        if self.driver.find_element_by_id('txfscheckbox'):
-            self.driver.find_element_by_id('txfscheckbox').click()
-            self.driver.execute_script("save()")
+        self.driver.execute_script("")
+        if self.driver.find_element_by_id(''):
+            self.driver.find_element_by_id('').click()
+            self.driver.execute_script("")
 
         return
 
