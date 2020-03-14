@@ -7,6 +7,7 @@ selenium chrome驱动 镜像地址: [http://npm.taobao.org/mirrors/selenium](htt
 
 2.0版本新增通过命令行读入，因为有的计算机可能在自动运行程序的时候无法读取文本文件
 
+新增将http链接修改为https链接
 #登陆方式
 
 1.手动输入账户密码登陆(效率较低)
