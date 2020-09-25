@@ -5,6 +5,7 @@
 #@File  : main.py
 
 import platform
+import traceback
 
 from selenium import webdriver
 import time
