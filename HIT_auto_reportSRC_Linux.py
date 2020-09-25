@@ -57,6 +57,7 @@ class Report(object):
 
         self.Report()
         self.temperature_report()
+        self.log("------------")
         self.driver.close()
 
     def login(self):
@@ -104,18 +105,15 @@ class Report(object):
                         break
                 except UnexpectedAlertPresentException:
                     self.log("检测到今日已生成疫情上报")
-                    self.log("------------")
                     return
 
                 except NoSuchElementException:
                     self.log("检测到今日已生成疫情上报")
-                    self.log("------------")
                     return
 
 
         self.driver.execute_script("save()")
         self.log("上报成功")
-        self.log("------------")
         return
 
     def temperature_report(self):
