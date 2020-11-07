@@ -98,8 +98,7 @@ class Report(object):
         self.log("添加新的上报")
         while True:
                 time.sleep(0.5)
-                print("检测checkbox勾选状况")
-
+                print("设置体温并检测checkbox勾选状况")
                 try:
                     """
                     体温按钮1
