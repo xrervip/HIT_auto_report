@@ -88,9 +88,8 @@ class Report(object):
             time.sleep(1)
 
         try:
-            #self.driver.execute_script("add()")
-
-            self.load_url("https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/editYqxx?id=B371C35E13D7665EE053653CA8C0AA52&zt=01")
+            self.driver.execute_script("add()")
+            #self.load_url("https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/editYqxx?id=B371C35E13D7665EE053653CA8C0AA52&zt=01")
         except JavascriptException:
             self.log("当前不在上报时间！")
             return
@@ -102,6 +101,9 @@ class Report(object):
                 print("检测checkbox勾选状况")
 
                 try:
+                    """
+                    体温按钮1
+                    """
                     self.wait_and_click('tw')
                     old_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[8]')
                     new_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[2]')
@@ -110,6 +112,7 @@ class Report(object):
                     time.sleep(0.5)
                     self.wait_and_click('weui-picker-confirm')
                     time.sleep(0.5)
+
                     self.wait_and_click('tw1')
                     old_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[2]')
                     new_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[2]')
@@ -117,6 +120,7 @@ class Report(object):
                     ActionChains(self.driver).drag_and_drop(new_temperature, old_temperature).perform()
                     time.sleep(0.5)
                     self.wait_and_click('weui-picker-confirm')
+                    self.log("成功设置体温")
 
                     if self.driver.find_element_by_id("txfscheckbox"):
                         self.driver.find_element_by_id("txfscheckbox").click()
