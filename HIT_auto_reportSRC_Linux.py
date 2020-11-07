@@ -56,9 +56,10 @@ class Report(object):
             time.sleep(0.5)
 
         self.Report()
-        self.temperature_report()
+        #self.temperature_report()
         self.log("------------")
-        self.driver.close()
+        self.driver.quit()
+        return
 
     def login(self):
         self.load_url('http://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/shsj/loginChange')
@@ -87,8 +88,9 @@ class Report(object):
             time.sleep(1)
 
         try:
-            self.driver.execute_script("add()")
+            #self.driver.execute_script("add()")
 
+            self.load_url("https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/editYqxx?id=B371C35E13D7665EE053653CA8C0AA52&zt=01")
         except JavascriptException:
             self.log("当前不在上报时间！")
             return
@@ -98,7 +100,24 @@ class Report(object):
         while True:
                 time.sleep(0.5)
                 print("检测checkbox勾选状况")
+
                 try:
+                    self.wait_and_click('tw')
+                    old_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[8]')
+                    new_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[2]')
+                    time.sleep(0.5)
+                    ActionChains(self.driver).drag_and_drop(new_temperature, old_temperature).perform()
+                    time.sleep(0.5)
+                    self.wait_and_click('weui-picker-confirm')
+                    time.sleep(0.5)
+                    self.wait_and_click('tw1')
+                    old_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[2]')
+                    new_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[2]')
+                    time.sleep(0.5)
+                    ActionChains(self.driver).drag_and_drop(new_temperature, old_temperature).perform()
+                    time.sleep(0.5)
+                    self.wait_and_click('weui-picker-confirm')
+
                     if self.driver.find_element_by_id("txfscheckbox"):
                         self.driver.find_element_by_id("txfscheckbox").click()
                         self.log("勾选checkbox")
@@ -112,8 +131,9 @@ class Report(object):
                     return
 
 
-        self.driver.execute_script("save()")
+        # self.driver.execute_script("save()")
         self.log("上报成功")
+
         return
 
     def temperature_report(self):
@@ -218,6 +238,7 @@ class Report(object):
         """
         element = self.wait_element_id(element_id)
         element.click()
+        return element
 
     def load_url(self, url):
         self.driver.get(url)
