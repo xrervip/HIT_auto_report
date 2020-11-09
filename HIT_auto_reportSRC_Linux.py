@@ -89,7 +89,7 @@ class Report(object):
 
         try:
             self.driver.execute_script("add()")
-            #self.load_url("https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/editYqxx?id=B371C35E13D7665EE053653CA8C0AA52&zt=01")
+            #self.load_url("https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/editYqxx?id=B38F09AD700BB738E053663CA8C0AB9D&zt=00")
         except JavascriptException:
             self.log("当前不在上报时间！")
             return
@@ -134,7 +134,7 @@ class Report(object):
                     return
 
 
-        # self.driver.execute_script("save()")
+        self.driver.execute_script("save()")
         self.log("上报成功")
 
         return
