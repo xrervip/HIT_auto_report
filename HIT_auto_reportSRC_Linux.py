@@ -35,6 +35,7 @@ class Report(object):
         chrome_options = Options()
         sysstr = platform.system()
         #根据系统类型配置chrome_options
+
         if (sysstr == "Linux"):
             chrome_options.add_argument('--headless')  # 16年之后，chrome给出的解决办法，抢了PhantomJS饭碗
             chrome_options.add_argument('--disable-gpu')
@@ -80,7 +81,7 @@ class Report(object):
 
 
     def Report(self):
-        self.wait_url('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/yqxx')
+        self.load_url('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/yqxx')
         self.log("尝试首次载入上报界面")
         while 'https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/yqxx' != self.driver.current_url:
             self.wait_url('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/yqxx')
@@ -101,52 +102,67 @@ class Report(object):
             return
 
         self.log("添加新的上报")
+        location = self.wait_element_path("/html/body/div[1]/div[3]/div[1]/input")
+        cur_loc = location.get_attribute('value')
         while True:
                 time.sleep(5)
-                print("设置体温并检测checkbox勾选状况")
+                self.log("设置地理位置")
+                location.clear()
+                location.send_keys(cur_loc)
                 try:
-                    """
-                    体温按钮1
-                    """
-                    self.wait_and_click_id('tw')
-                    old_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[8]')
-                    new_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[2]')
-                    time.sleep(0.5)
-                    ActionChains(self.driver).drag_and_drop(new_temperature, old_temperature).perform()
-                    time.sleep(0.5)
-                    self.wait_and_click_id('weui-picker-confirm')
-                    time.sleep(0.5)
 
-                    self.wait_and_click_id('tw1')
-                    old_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[2]')
-                    new_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[2]')
-                    time.sleep(0.5)
-                    try:
-                        ActionChains(self.driver).drag_and_drop(new_temperature, old_temperature).perform()
-                    except Exception as te:
-                        self.log("按钮控件出现问题")
-                        pass
 
-                    time.sleep(0.5)
-                    self.wait_and_click_id('weui-picker-confirm')
-                    self.log("成功设置体温")
+                    # try:
+                    #     """
+                    #     体温按钮1
+                    #     """
+                    #     self.wait_and_click_id('tw')
+                    #     old_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[8]')
+                    #     new_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[2]')
+                    #     time.sleep(0.5)
+                    #     ActionChains(self.driver).drag_and_drop(new_temperature, old_temperature).perform()
+                    #     time.sleep(0.5)
+                    #     self.wait_and_click_id('weui-picker-confirm')
+                    #     time.sleep(0.5)
+                    #
+                    #     self.wait_and_click_id('tw1')
+                    #     old_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[8]')
+                    #     new_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[2]')
+                    #     time.sleep(0.5)
+                    #
+                    #     ActionChains(self.driver).drag_and_drop(new_temperature, old_temperature).perform()
+                    #     time.sleep(0.5)
+                    #     self.wait_and_click_id('weui-picker-confirm')
+                    #     self.log("成功设置体温")
+                    #
+                    # except TimeoutException as te:
+                    #     self.log("按钮控件出现问题")
+                    #     self.driver.refresh()
+                    #     pass
 
-                    if self.driver.find_element_by_id("txfscheckbox"):
-                        self.driver.find_element_by_id("txfscheckbox").click()
+                    if self.driver.find_element_by_id("checkbox"):
+                        self.driver.find_element_by_id("checkbox").click()
                         self.log("勾选checkbox")
                         break
-                except UnexpectedAlertPresentException:
+
+                except UnexpectedAlertPresentException as e:
                     self.log("检测到今日已生成疫情上报")
+                    print(str(e))
                     return
 
-                except NoSuchElementException:
+                except NoSuchElementException as e:
                     self.log("检测到今日已生成疫情上报")
+                    print(str(e))
                     return
 
         time.sleep(0.5)
+        location.clear()
+        location.send_keys(cur_loc)
         self.driver.execute_script("save()")
+        time.sleep(3)
+        self.wait_and_click_path("/html/body/div[13]/div[3]/a[2]")
         self.log("上报成功")
-
+        time.sleep(20)
         return
 
     # def temperature_report(self):
