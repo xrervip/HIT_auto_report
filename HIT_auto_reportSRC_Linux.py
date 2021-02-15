@@ -10,7 +10,8 @@ import traceback
 from selenium import webdriver
 import time
 
-from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException, NoSuchElementException,JavascriptException
+from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException, NoSuchElementException, \
+    JavascriptException, StaleElementReferenceException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -89,123 +90,65 @@ class Report(object):
             time.sleep(1)
 
         try:
-            if "审核状态：未提交" == self.wait_element_path("/html/body/div[1]/div[2]/div[2]/div[1]/div[2]").text:
+            status_text=self.wait_element_path("/html/body/div[1]/div[2]/div[2]/div[1]/div[2]").text
+            if "审核状态：未提交" == status_text or "审核状态：待辅导员审核" == status_text:
                 self.log("当前状态：未成功提交")
                 self.wait_and_click_path("/html/body/div[1]/div[2]/div[2]/div[2]")
 
             else:
                 self.driver.execute_script("add()")
 
-            #self.load_url("https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/editYqxx?id=B38F09AD700BB738E053663CA8C0AB9D&zt=00")
         except JavascriptException:
             self.log("当前不在上报时间！")
             return
 
-        self.log("添加新的上报")
-        location = self.wait_element_path("/html/body/div[1]/div[3]/div[1]/input")
-        cur_loc = location.get_attribute('value')
         while True:
-                time.sleep(5)
+            try:
+                self.log("添加新的上报")
+                location = self.wait_element_path("/html/body/div[1]/div[3]/div[1]/input")
+                cur_loc = location.get_attribute('value')
+                if cur_loc == '获取位置失败，请打开位置权限！':
+                    cur_loc ='幻想鄉博麗神社'
+                time.sleep(1)
+
+                checkbox= self.wait_element_id("checkbox")
+                if not checkbox.is_selected():
+                    self.driver.find_element_by_id("checkbox").click()
+                    self.log("已勾选checkbox")
+
+                time.sleep(0.5)
                 self.log("设置地理位置")
                 location.clear()
                 location.send_keys(cur_loc)
+                self.driver.execute_script("save()")
+                time.sleep(3)
+                Weui_confirm_btn = self.wait_element_path("/html/body/div[13]/div[3]/a[2]")
                 try:
-
-
-                    # try:
-                    #     """
-                    #     体温按钮1
-                    #     """
-                    #     self.wait_and_click_id('tw')
-                    #     old_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[8]')
-                    #     new_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[2]')
-                    #     time.sleep(0.5)
-                    #     ActionChains(self.driver).drag_and_drop(new_temperature, old_temperature).perform()
-                    #     time.sleep(0.5)
-                    #     self.wait_and_click_id('weui-picker-confirm')
-                    #     time.sleep(0.5)
-                    #
-                    #     self.wait_and_click_id('tw1')
-                    #     old_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[8]')
-                    #     new_temperature = self.wait_element_path('/html/body/div[11]/div[2]/div[2]/div/div[3]/div[2]')
-                    #     time.sleep(0.5)
-                    #
-                    #     ActionChains(self.driver).drag_and_drop(new_temperature, old_temperature).perform()
-                    #     time.sleep(0.5)
-                    #     self.wait_and_click_id('weui-picker-confirm')
-                    #     self.log("成功设置体温")
-                    #
-                    # except TimeoutException as te:
-                    #     self.log("按钮控件出现问题")
-                    #     self.driver.refresh()
-                    #     pass
-
-                    if self.driver.find_element_by_id("checkbox"):
-                        self.driver.find_element_by_id("checkbox").click()
-                        self.log("勾选checkbox")
+                    if Weui_confirm_btn.is_enabled():
+                        Weui_confirm_btn.click()
+                        self.log("上报成功")
                         break
+                except StaleElementReferenceException as e:
+                    self.log("没有上报成功，可能是地理位置出现了问题")
+                    self.driver.refresh()
 
-                except UnexpectedAlertPresentException as e:
-                    self.log("检测到今日已生成疫情上报")
-                    print(str(e))
-                    return
+                time.sleep(5)
 
-                except NoSuchElementException as e:
-                    self.log("检测到今日已生成疫情上报")
-                    print(str(e))
-                    return
+            except UnexpectedAlertPresentException as e:
+                self.log("检测到今日已生成疫情上报")
+                print(str(e))
+                return
 
-        time.sleep(0.5)
-        location.clear()
-        location.send_keys(cur_loc)
-        self.driver.execute_script("save()")
-        time.sleep(3)
-        self.wait_and_click_path("/html/body/div[13]/div[3]/a[2]")
-        self.log("上报成功")
-        time.sleep(20)
+            except NoSuchElementException as e:
+                self.log("检测到今日已生成疫情上报")
+                print(str(e))
+                return
+
+
+        time.sleep(1)
         return
 
-    # def temperature_report(self):
-    #     """
-    #     自动体温上报
-    #     :return:
-    #     """
-    #     self.log("进行体温上报")
-    #     self.driver.get(self.temperature_report_url)
-    #     self.wait_url(self.temperature_report_url)
-    #
-    #     self.driver.execute_script("add()")
-    #     # self.wait_and_click('twsb_tx')
-    #
-    #     try:
-    #         self.wait_url_redirect(self.temperature_report_url, 5)
-    #     except UnexpectedAlertPresentException:
-    #         self.log("今日已经生成了体温上报")
-    #         return
-    #
-    #     self.wait_and_click_id('edit1')
-    #     old_temperature = self.wait_element_path('/html/body/div[2]/div[2]/div[2]/div[1]/div[3]/div[1]')
-    #     new_temperature = self.wait_element_path('/html/body/div[2]/div[2]/div[2]/div[1]/div[3]/div[4]')
-    #     time.sleep(1)
-    #     try:
-    #         ActionChains(self.driver).drag_and_drop(new_temperature, old_temperature).perform()
-    #     except Exception as te:
-    #         self.log("按钮控件出现问题")
-    #         pass
-    #
-    #     time.sleep(1)
-    #     self.wait_and_click_id('weui-picker-confirm')
-    #     self.driver.execute_script("save(1)")
-    #     time.sleep(3)
-    #
-    #     self.wait_and_click_id('edit2')
-    #     time.sleep(1)
-    #     self.wait_and_click_id('weui-picker-confirm')
-    #     self.driver.execute_script("save(2)")
-    #     time.sleep(3)
-    #     time.sleep(1)
-    #
-    #     self.log("体温上报成功")
+
 
     def wait_url(self, target_url, timeout=10.0):
         """
@@ -301,7 +244,7 @@ if __name__ == '__main__':
     id=""
     Password=""
     f = open('log', 'a')
-    if len(sys.argv)==3:
+    if len(sys.argv)>=3:
         id=sys.argv[1]
         Password=sys.argv[2]
         r = Report()
