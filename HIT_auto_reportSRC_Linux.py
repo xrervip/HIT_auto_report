@@ -30,9 +30,18 @@ class Report(object):
 
         self.log("开始上报")
         chrome_options = Options()
+        # 禁止弹窗
+        prefs = {
+            'profile.default_content_setting_values':
+                {
+                    'notifications': 2
+                }
+        }
+        # 禁止弹窗加入
+        chrome_options.add_experimental_option('prefs', prefs)
+
         sysstr = platform.system()
         # 根据系统类型配置chrome_options
-
         if (sysstr == "Linux"):
             chrome_options.add_argument('--headless')  # 16年之后，chrome给出的解决办法，抢了PhantomJS饭碗
             chrome_options.add_argument('--disable-gpu')
