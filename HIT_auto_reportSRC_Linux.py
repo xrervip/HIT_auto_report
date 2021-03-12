@@ -57,13 +57,12 @@ class Report(object):
             try:
                 self.login()
             except Exception as e:
-                print(str(e))
-                Report.log(str(e))
+                self.log("登陆出现异常")
+                self.log(str(e))
                 self.driver.refresh()
             time.sleep(0.5)
 
         self.Report()
-        # self.temperature_report()
         self.log("------------")
         self.driver.quit()
         return
@@ -73,14 +72,18 @@ class Report(object):
         time.sleep(0.5)
         if self.home_url == self.driver.current_url:
             return
-        self.driver.find_element_by_xpath("/html/body/div/div[2]/button[1]").click()
+        self.wait_element_path("/html/body/div/div[2]/button[1]").click()
         time.sleep(0.5)
-        self.driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[2]/div/div[3]/div/form/p[1]/input").send_keys(
-            id)
-        self.driver.find_element_by_xpath(
-            "/html/body/div[2]/div[2]/div[2]/div/div[3]/div/form/p[2]/input[1]").send_keys(Password)
-        self.driver.find_element_by_xpath(
-            "/html/body/div[2]/div[2]/div[2]/div/div[3]/div/form/p[2]/input[1]").send_keys(Keys.ENTER)
+        self.wait_element_id("username").send_keys(id)
+        self.wait_element_id("password").send_keys(Password)
+        self.wait_element_id("password").send_keys(Keys.ENTER)
+
+        # self.wait_element_path("/html/body/div[2]/div[2]/div[2]/div/div[3]/div/form/p[1]/input").send_keys(
+        #     id)
+        # self.wait_element_path(
+        #     "/html/body/div[2]/div[2]/div[2]/div/div[3]/div/form/p[2]/input[1]").send_keys(Password)
+        # self.wait_element_path(
+        #     "/html/body/div[2]/div[2]/div[2]/div/div[3]/div/form/p[2]/input[1]").send_keys(Keys.ENTER)
         time.sleep(0.5)
         if self.home_url == self.driver.current_url:
             self.log("登陆成功")
@@ -144,17 +147,11 @@ class Report(object):
 
                 time.sleep(5)
 
-            except UnexpectedAlertPresentException as e:
-                #如果出现拒绝地理位置授权
-                alert = self.driver.switch_to.alert
-                alert.accept()
-                self.log("出现弹窗，可能是有关地理授权的原因")
+            except Exception as e:
+                self.log("出现异常"+str(e))
                 continue
 
-            except NoSuchElementException as e:
-                self.log("检测到今日已生成疫情上报")
-                print(str(e))
-                return
+
 
         time.sleep(1)
         return
